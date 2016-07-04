@@ -8,7 +8,7 @@ const API_KEY = "AIzaSyBvomC628DSRHo_k0HpsSH4JtHbga3_4nY";
 
 import SearchBar from './components/search_bar';
 import VideoList from './components/video_list';
-import VideoDetail from './components/video_detail'
+import VideoDetail from './components/video_detail';
 
 
 
@@ -19,24 +19,35 @@ class App extends Component{
 	constructor(props) {
 		super(props) 
 
-		this.state = { videos: []};
+		this.state = { 
+			videos: [],
+			selectedVideo: null
+		};
 
-		//Get some data from Youtube API
-		YTSearch({key: API_KEY, term:'surfboards'}, (videos) => {
-			this.setState({ videos });
-			//this.setState({ videos:videos });
+		this.videoSearch('surfboards');
+	}
+
+	videoSearch(term) {
+	//Get some data from Youtube API
+	YTSearch({key: API_KEY, term:term}, (videos) => {
+		this.setState({ 
+			videos : videos,
+			selectedVideo: videos[0]
 		});
-	}
+	});
+}
 
-	render() {
-		return (
-			<div>
-			<SearchBar />
-			<VideoDetail video={this.state.videos[0]}/>
-			<VideoList videos={this.state.videos} />
-			</div>
-			);
-	}
+render() {
+	return (
+		<div>
+		<SearchBar onSearchTermChange={term => this.videoSearch(term)}/>
+		<VideoDetail video={this.state.selectedVideo} />
+		<VideoList 
+		onVideoSelect={selectedVideo => this.setState({selectedVideo})}
+		videos={this.state.videos} />
+		</div>
+		);
+}
 };
 
 // Take this component's generated HTML and put it osn the page (in the DOM)
